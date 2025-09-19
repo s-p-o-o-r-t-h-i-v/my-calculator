@@ -33,7 +33,21 @@ def divide(a, b):
     return a / b
 
 
-# TODO: Students will add power, sqrt functions later
+def power(a, b):
+    """Raise a to the power of b"""
+    if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+        raise TypeError("Both arguments must be numbers")
+    return a ** b
+
+
+def square_root(a):
+    """Calculate square root of a"""
+    if not isinstance(a, (int, float)):
+        raise TypeError("Argument must be a number")
+    if a < 0:
+        raise ValueError("Cannotcalculate square root of negative")
+    return a ** 0.5
+
 
 if __name__ == "__main__":
     print("🧮 Calculator Module")
@@ -41,3 +55,5 @@ if __name__ == "__main__":
     print(f"5 - 2 = {subtract(5, 2)}")
     print(f"3 × 4 = {multiply(3, 4)}")
     print(f"10 ÷ 2 = {divide(10, 2)}")
+    print(f"2 ^ 3 = {power(2, 3)}")
+    print(f"√16 = {square_root(16)}")

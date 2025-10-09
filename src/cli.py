@@ -7,11 +7,13 @@ import sys
 import click
 from src.calculator import add, subtract, multiply, divide, power, square_root
 
+
 def format_result(value):
     """Convert floats like 8.0 to 8 for cleaner CLI output."""
     if isinstance(value, float) and value.is_integer():
         return int(value)
     return value
+
 
 @click.command()
 @click.argument("operation")
@@ -41,6 +43,7 @@ def calculate(operation, num1, num2=None):
     except Exception as e:
         click.echo(str(e))
         sys.exit(1)
+
 
 if __name__ == "__main__":
     calculate()

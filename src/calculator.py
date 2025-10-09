@@ -3,6 +3,7 @@ Calculator Module - Basic arithmetic operations
 Students will extend this with more functions
 """
 
+
 def add(a, b):
     """Add two numbers together"""
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
@@ -37,7 +38,7 @@ def power(a, b):
     """Raise a to the power of b"""
     if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
         raise TypeError("Both arguments must be numbers")
-    return a ** b
+    return a**b
 
 
 def square_root(a):
@@ -46,7 +47,7 @@ def square_root(a):
         raise TypeError("Argument must be a number")
     if a < 0:
         raise ValueError("Cannotcalculate square root of negative")
-    return a ** 0.5
+    return a**0.5
 
 
 if __name__ == "__main__":

@@ -7,31 +7,36 @@ import pytest
 
 
 class TestCLIIntegration:
-    """Test CLI application integrating with calculator module (in-process)"""
+    """Test CLI application integrating with calculator module"""
 
     def run_cli(self, *args):
-        """Invoke Click CLI in-process so coverage is measured."""
+        """Invoke Click CLI in-process"""
         from src.cli import calculate
         runner = CliRunner()
         return runner.invoke(calculate, list(args))
 
     # --- Positive tests for all operations ---
-    @pytest.mark.parametrize("operation, num1, num2, expected", [
+    @pytest.mark.parametrize("operation,num1,num2,expected", [
         ("add", "5", "3", "8"),
         ("subtract", "10", "4", "6"),
         ("multiply", "4", "7", "28"),
         ("divide", "15", "3", "5"),
         ("power", "2", "3", "8"),
     ])
-    def test_cli_operations_integration(self, operation, num1, num2, expected):
+    def test_cli_operations(self, operation, num1, num2, expected):
         res = self.run_cli(operation, num1, num2)
         assert res.exit_code == 0
         assert res.output.strip() == expected
 
-    def test_cli_sqrt_integration(self):
-        res = self.run_cli("sqrt", "16")
+    # sqrt only needs num1
+    @pytest.mark.parametrize("operation,num1,expected", [
+        ("sqrt", "16", "4"),
+        ("square_root", "25", "5")
+    ])
+    def test_cli_sqrt(self, operation, num1, expected):
+        res = self.run_cli(operation, num1)
         assert res.exit_code == 0
-        assert res.output.strip() == "4"
+        assert res.output.strip() == expected
 
     # --- Error handling tests ---
     def test_cli_divide_by_zero(self):
@@ -41,9 +46,11 @@ class TestCLIIntegration:
 
     def test_cli_missing_num2(self):
         """Operations that require num2 should fail if missing"""
-        res = self.run_cli("add", "5")
-        assert res.exit_code != 0
-        assert "Error" in res.output
+        for op in ["add", "subtract", "multiply", "divide", "power"]:
+            res = self.run_cli(op, "5")
+            assert res.exit_code != 0
+            assert "Error" in res.output
+            assert f"Operation '{op}' requires a second number." in res.output
 
     def test_cli_invalid_operation(self):
         res = self.run_cli("invalid", "1", "2")
@@ -55,18 +62,15 @@ class TestCalculatorModuleIntegration:
     """Test calculator module functions work together"""
 
     def test_chained_operations(self):
-        """Test using results from one operation in another"""
         from src.calculator import add, multiply, divide
-        step1 = add(5, 3)        # 8
-        step2 = multiply(step1, 2)  # 16
-        step3 = divide(step2, 4)    # 4
+        # (5 + 3) * 2 / 4 = 4
+        step1 = add(5, 3)
+        step2 = multiply(step1, 2)
+        step3 = divide(step2, 4)
         assert step3 == 4.0
 
-    def test_complex_calculation_integration(self):
-        """Test complex calculation using multiple functions"""
-        from src.calculator import power, square_root, add
-        a_squared = power(3, 2)        # 9
-        b_squared = power(4, 2)        # 16
-        sum_squares = add(a_squared, b_squared)  # 25
-        hypotenuse = square_root(sum_squares)    # 5
+    def test_complex_calculation(self):
+        from src.calculator import add, power, square_root
+        # sqrt(3^2 + 4^2) = 5
+        hypotenuse = square_root(add(power(3, 2), power(4, 2)))
         assert hypotenuse == 5.0

@@ -14,6 +14,10 @@ from src.calculator import add, subtract, multiply, divide, power, square_root
 def calculate(operation, num1, num2=None):
     """Simple calculator CLI."""
     try:
+        # Check for required second argument
+        if operation in ("add", "subtract", "multiply", "divide", "power") and num2 is None:
+            raise ValueError(f"Operation '{operation}' requires a second number.")
+
         if operation == "add":
             result = add(num1, num2)
         elif operation == "subtract":

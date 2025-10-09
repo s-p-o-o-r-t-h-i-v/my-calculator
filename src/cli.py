@@ -1,51 +1,47 @@
+"""
+Command Line Interface for Calculator
+Example: python src/cli.py add 5 3
+"""
+
 import sys
-try:
-    from .calculator import add, subtract, multiply, divide, power, square_root
-except ImportError:
-    # fallback if running directly
-    from src.calculator import add, subtract, multiply, divide, power, square_root
+import click
+from src.calculator import add, subtract, multiply, divide, power, square_root
 
-def main():
-    if len(sys.argv) < 3:
-        print("Usage: python -m src.cli <operation> <num1> [<num2>]")
-        sys.exit(1)
-
-    operation = sys.argv[1]
-
+@click.command()
+@click.argument("operation")
+@click.argument("num1", type=float)
+@click.argument("num2", type=float, required=False)
+def calculate(operation, num1, num2=None):
+    """Simple calculator CLI."""
     try:
-        if operation in ["add", "subtract", "multiply", "divide", "power"]:
-            a = float(sys.argv[2])
-            b = float(sys.argv[3])
-            if operation == "add":
-                result = add(a, b)
-            elif operation == "subtract":
-                result = subtract(a, b)
-            elif operation == "multiply":
-                result = multiply(a, b)
-            elif operation == "divide":
-                result = divide(a, b)
-            elif operation == "power":
-                result = power(a, b)
-
-        elif operation == "sqrt":
-            a = float(sys.argv[2])
-            result = square_root(a)
-
+        if operation == "add":
+            result = add(num1, num2)
+        elif operation == "subtract":
+            result = subtract(num1, num2)
+        elif operation == "multiply":
+            result = multiply(num1, num2)
+        elif operation == "divide":
+            result = divide(num1, num2)
+        elif operation == "power":
+            result = power(num1, num2)
+        elif operation in ("square_root", "sqrt"):
+            result = square_root(num1)
         else:
-            print("Unknown operation")
+            click.echo(f"Unknown operation: {operation}")
             sys.exit(1)
 
-        # Print result as integer if it's whole, else float
+        # Format result nicely
         if result == int(result):
-            print(int(result))
+            click.echo(int(result))
         else:
-            print(result)
+            click.echo(f"{result:.2f}")
 
-        sys.exit(0)
-
-    except Exception as e:
-        print(e)
+    except ValueError as e:
+        click.echo(f"Error: {e}")
+        sys.exit(1)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        click.echo(f"Unexpected error: {e}")
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    calculate()  # pylint: disable=no-value-for-parameter

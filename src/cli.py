@@ -6,20 +6,19 @@ Example: python -m src.cli add 5 3
 import sys
 import click
 from src.calculator import add, subtract, multiply, divide, power, square_root
-# If cli.py is inside src/, you can also use:
-# from .calculator import add, subtract, multiply, divide, power, square_root
 
+def format_result(value):
+    """Convert floats like 8.0 to 8 for cleaner CLI output."""
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    return value
 
 @click.command()
 @click.argument("operation")
 @click.argument("num1", type=float)
 @click.argument("num2", type=float, required=False)
 def calculate(operation, num1, num2=None):
-    """Simple calculator CLI"""
     try:
-        # Normalize operation (optional, just in case user types uppercase)
-        operation = operation.lower()
-
         if operation == "add":
             result = add(num1, num2)
         elif operation == "subtract":
@@ -33,21 +32,15 @@ def calculate(operation, num1, num2=None):
         elif operation in ("square_root", "sqrt"):
             result = square_root(num1)
         else:
-            click.echo("Unknown operation")
-            sys.exit(1)  # Test expects exit code 1
+            click.echo(f"Unknown operation: {operation}")
+            sys.exit(1)
 
+        result = format_result(result)
         click.echo(result)
-        sys.exit(0)  # Success
-
-    except ZeroDivisionError:
-        click.echo("Cannot divide by zero")
-        sys.exit(1)
 
     except Exception as e:
-        # Any other calculator-related error
         click.echo(str(e))
         sys.exit(1)
-
 
 if __name__ == "__main__":
     calculate()

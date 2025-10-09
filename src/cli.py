@@ -1,11 +1,13 @@
 """
 Command Line Interface for Calculator
-Example: python src/cli.py add 5 3
+Example: python -m src.cli add 5 3
 """
 
 import sys
 import click
-from calculator import add, subtract, multiply, divide, power, square_root
+from src.calculator import add, subtract, multiply, divide, power, square_root
+# If cli.py is inside src/, you can also use:
+# from .calculator import add, subtract, multiply, divide, power, square_root
 
 
 @click.command()
@@ -15,6 +17,9 @@ from calculator import add, subtract, multiply, divide, power, square_root
 def calculate(operation, num1, num2=None):
     """Simple calculator CLI"""
     try:
+        # Normalize operation (optional, just in case user types uppercase)
+        operation = operation.lower()
+
         if operation == "add":
             result = add(num1, num2)
         elif operation == "subtract":
@@ -25,18 +30,23 @@ def calculate(operation, num1, num2=None):
             result = divide(num1, num2)
         elif operation == "power":
             result = power(num1, num2)
-        elif operation == "square_root" or operation == "sqrt":
+        elif operation in ("square_root", "sqrt"):
             result = square_root(num1)
         else:
-            click.echo(f"Unknown operation: {operation}")
-            sys.exit(1)
+            click.echo("Unknown operation")
+            sys.exit(1)  # Test expects exit code 1
 
         click.echo(result)
+        sys.exit(0)  # Success
 
-    except Exception as e:
-        click.echo(str(e))
+    except ZeroDivisionError:
+        click.echo("Cannot divide by zero")
         sys.exit(1)
 
+    except Exception as e:
+        # Any other calculator-related error
+        click.echo(str(e))
+        sys.exit(1)
 
 
 if __name__ == "__main__":

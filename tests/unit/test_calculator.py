@@ -98,5 +98,7 @@ class TestAdvancedOperations:
 
     def test_square_root_negative_raises_error(self):
         """Test that square root ValueError"""
-        with pytest.raises(ValueError, match="Cannotcalculate square root of negative"):
+        with pytest.raises(ValueError, match="Cannot calculate square root of negative"):
             square_root(-4)
+
+

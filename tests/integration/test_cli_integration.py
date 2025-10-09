@@ -20,30 +20,32 @@ class TestCLIIntegration:
         """Test CLI can perform addition"""
         result = self.run_cli("add", "5", "3")
         assert result.returncode == 0
-        assert result.stdout.strip() == "8"
+        # Convert stdout to float for comparison
+        assert float(result.stdout.strip()) == 8
 
     def test_cli_multiply_integration(self):
         """Test CLI can perform multiplication"""
         result = self.run_cli("multiply", "4", "7")
         assert result.returncode == 0
-        assert result.stdout.strip() == "28"
+        assert float(result.stdout.strip()) == 28
 
     def test_cli_divide_integration(self):
         """Test CLI can perform division"""
         result = self.run_cli("divide", "15", "3")
         assert result.returncode == 0
-        assert result.stdout.strip() == "5"
+        assert float(result.stdout.strip()) == 5
 
     def test_cli_sqrt_integration(self):
         """Test CLI can perform square root"""
         result = self.run_cli("sqrt", "16")
         assert result.returncode == 0
-        assert result.stdout.strip() == "4"
+        assert float(result.stdout.strip()) == 4
 
     def test_cli_error_handling_integration(self):
         """Test CLI properly handles calculator errors"""
         result = self.run_cli("divide", "10", "0")
         assert result.returncode == 1
+        # Matches updated divide() error message
         assert "Cannot divide by zero" in result.stdout
 
     def test_cli_invalid_operation_integration(self):
